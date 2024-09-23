@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload de Arquivo Excel</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Adicione seu estilo CSS aqui -->
+</head>
+<body>
+    <div class="container">
+        <h1>Comparar Arquivo Excel</h1>
+        <form id="uploadForm" enctype="multipart/form-data">
+            <input type="file" name="file" accept=".xlsx, .xls" required>
+            <button type="submit">Enviar</button>
+        </form>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                displayResults(data);
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+            });
+        });
+
+        function displayResults(data) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<h2>Resultados</h2>';
+            const table = document.createElement('table');
+            table.innerHTML = `
+                <tr>
+                    <th>Matrícula</th>
+                    <th>Nome</th>
+                    <th>Ativo</th>
+                    <th>Status</th>
+                </tr>
+            `;
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.matricula}</td>
+                    <td>${item.nome}</td>
+                    <td>${item.ativo}</td>
+                    <td>${item.status}</td>
+                `;
+                table.appendChild(row);
+            });
+            resultDiv.appendChild(table);
+        }
+    </script>
+</body>
+</html>
